@@ -36,7 +36,7 @@ def display() :
 
         # bloc sur les infos du dataframe 
         st.subheader('Information sur les données :')
-        with st.expander("📊 Aperçu du DataFrame"):
+        with st.expander("📊 Aperçu"):
             st.markdown(f"**Dimensions :** {df.shape[0]} lignes × {df.shape[1]} colonnes")
             st.markdown("**Colonnes disponibles :**")
             st.write(list(df.columns))
@@ -66,25 +66,43 @@ def display() :
         else:
             title = None
 
-        x_choice = st.checkbox("Voulez-vous nommer l'axe des abscisses ?")
-        if x_choice:
-            xlabel = st.text_input("Entrez le nom de l'axe des abscisses :", key="xlabel_input")
-        else:
-            xlabel = None
-
-        y_choice = st.checkbox("Voulez-vous nommer l'axe des ordonnées ?")
-        if y_choice:
-            ylabel = st.text_input("Entrez le nom de l'axe des ordonnées :", key="ylabel_input")
-        else:
-            ylabel = None
-
         model_graph = utils_graph.plot_graph(df = df.loc[:nb_line-1, :], x = col_x, y = col_y)
+
+        col_nombre, col_pourcentage = st.columns(2)
+
+        with col_nombre : 
+            x_choice = st.checkbox("Voulez-vous nommer l'axe des abscisses ?", key = "xlabel_choice")
+            if x_choice:
+                xlabel = st.text_input("Entrez le nom de l'axe des abscisses :", key="xlabel_input")
+            else:
+                xlabel = None
+
+            nombre_choice = st.checkbox('Mettre la valeur ?')
+            if nombre_choice : 
+                nombre = st.selectbox('Nom de la colonne des valeurs :', columns)
+            else :
+                nombre = None
+        
+        with col_pourcentage :
+            y_choice = st.checkbox("Voulez-vous nommer l'axe des ordonnées ?", key = "ylabel_choice")
+            if y_choice:
+                ylabel = st.text_input("Entrez le nom de l'axe des ordonnées :", key="ylabel_input")
+            else:
+                ylabel = None
+
+            pourcentage_choice = st.checkbox('Mettre le pourcentage ?')
+            if pourcentage_choice :
+                pourcentage = st.selectbox('Nom de la colonne des pourcentages :', columns)
+            else : 
+                pourcentage = None
+
         legend_choice = st.checkbox('Voulez-vous mettre une légende de couleurs ?')
 
         #annotation = st.checkbox('Voulez-cous mettre une annotation ?')
         #if annotation : 
         #    col_nombre = st.selectbox('Colonne des valeurs absolues', columns)
 
+    
         if legend_choice:
             col_color = st.selectbox('Choisir la colonne des numéros de couleurs', columns)
 
@@ -120,8 +138,11 @@ def display() :
                     legend_indices=legend_indices, 
                     title= title, 
                     xlabel= xlabel,
-                    ylabel= ylabel
+                    ylabel= ylabel, 
+                    show = False
                 )
+
+                model_graph.annotation(pourcentage= pourcentage, Nombre= nombre)
 
                 st.pyplot(barh)
             
@@ -130,18 +151,17 @@ def display() :
 
         else:
             # Tracer sans légende
-            barh = model_graph.barh_subplot(title= title, xlabel= xlabel, ylabel= ylabel)
+            barh = model_graph.barh_subplot(title= title, xlabel= xlabel, ylabel= ylabel, show=False)
+            model_graph.annotation(pourcentage= pourcentage, Nombre= nombre)
             st.pyplot(barh)
 
-        # Sauvegarde du graphique dans un buffer en mémoire
-        img_buffer = BytesIO()
-        barh.savefig(img_buffer, format='png', dpi=300, bbox_inches='tight')
-        img_buffer.seek(0)  # Revenir au début du buffer
+        if 'barh' in locals():
+            img_buffer = BytesIO()
+            barh.savefig(img_buffer, format='png', dpi=300, bbox_inches='tight')
+            img_buffer.seek(0)
 
-        # Bouton de téléchargement
-        st.download_button(
-            label="📥 Télécharger le graphique",
-            data=img_buffer,
-            file_name="mon_graphique.png",
-            mime="image/png"
-        )
+            st.download_button(
+                label="📥 Télécharger le graphique",
+                data=img_buffer,
+                file_name="mon_graphique.png",
+                mime="image/png")

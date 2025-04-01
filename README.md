@@ -5,7 +5,9 @@ Arborescance de l'application :
 - onglets : contient les différents types de graphiques (bar horizontale, etc.)
 - utils : contient l'ensemble des fonctions nécessaires au bon fonctionnement de l'application
 
-Ce logiciel a été mis en ligne via Github et accessible à partir de ce lien : https://app-project-gem6konsqjctcv2zfkc54v.streamlit.app/
+Ce logiciel a été mis en ligne via Github et accessible à partir de ce lien : https://graphiquefacile.streamlit.app/
+
+## Graphique en barre horizontale : 
 
 Une barre de sélection avec un entier correspond au nombre de lignes qu'on affiche dans le graphique à partir des données (compter à partir de la première ligne des données).
 

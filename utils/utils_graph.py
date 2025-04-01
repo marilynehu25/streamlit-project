@@ -21,7 +21,7 @@ class plot_graph() :
     def barh_subplot(self, title = None, xlabel = None,  ylabel = None,
                                 path = None, yticklabels = None, xticklabels = None, colors = None,
                                 legend_list = None, title_legend = None, show = True, force_new_fig= True, 
-                                legend_indices=None):
+                                legend_indices=None, pourcentage  = None, Nombre = None):
 
         # couleurs des barres 
         if colors in self.df.columns and not self.df[colors].empty:
@@ -108,6 +108,8 @@ class plot_graph() :
                 text = f'{self.df.loc[n,Nombre]} ({self.df.loc[n,pourcentage]} %)'
                 self.ax.text(width * 1.01 if not np.isnan(width) else 0 , bar.get_y() + bar.get_height() / 2,
                             text, va='center', ha='left', color='gray', fontsize=9)
+        
+        return self.fig
                 
 
     def encadrer(self) : 

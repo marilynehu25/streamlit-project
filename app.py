@@ -8,7 +8,7 @@ from io import BytesIO
 import utils.utils_graph as utils_graph
 from utils.utils_graph import plot_graph
 
-from onglets import onglet1
+from onglets import onglet1, onglet2
 
 st.title('Logiciel cartographique')
 
@@ -16,3 +16,7 @@ option = st.sidebar.selectbox("Choisir le format du graphique :", ("Graphique en
 
 if option == "Graphique en barre horizontale" : 
     onglet1.display()
+
+if option == "Histogramme" : 
+    onglet2.display()
+

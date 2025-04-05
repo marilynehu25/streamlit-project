@@ -1,3 +1,5 @@
+# Onglet pour tracer les histogrammes en barre horizontable
+
 import streamlit as st
 import pandas as pd
 from matplotlib.colors import to_hex
@@ -32,7 +34,7 @@ def display() :
 
         # visualisation des données
         st.header('Visualisation des données :')
-        st.write(df.head(5)) # pour 5 lignes
+        st.dataframe(df, use_container_width=True)
 
         # bloc sur les infos du dataframe 
         st.subheader('Information sur les données :')
@@ -44,20 +46,26 @@ def display() :
             st.write(df.dtypes)
 
         st.subheader('Choix d\'option  :')
-        if df.shape[0]>12 : 
-            nb_line = st.number_input(
-                "Nombre de lignes à afficher",
-                min_value=1,
-                max_value=len(df),
-                value=5,
-                step=1,
-                format="%d"  # ← force l'affichage et le retour d'un entier
-            )
+        nb_line = st.number_input(
+            "Nombre de lignes à afficher",
+            min_value=1,
+            max_value=len(df),
+            value=5,
+            step=1,
+            format="%d"  # ← force l'affichage et le retour d'un entier
+        )
 
         # choix des colonnes à tracer
         columns = df.columns.tolist()
 
-        col_x = st.selectbox('Choisir la colonne des valeurs (x)', columns)
+        float_cols = df.select_dtypes(include=['float', 'int']).columns
+
+        if len(float_cols) > 0:
+            default_index = columns.index(float_cols[0])
+            col_x = st.selectbox("Choisir la colonne des valeurs (x)", columns, index=default_index)
+        else:
+            col_x = st.selectbox("Choisir la colonne des valeurs (x)", columns)
+
         col_y = st.selectbox('Choisir la colonne des catégories (y)', columns)
         
         title_choice = st.checkbox("Voulez-vous mettre un titre au graphique ?")
@@ -66,7 +74,8 @@ def display() :
         else:
             title = None
 
-        model_graph = utils_graph.plot_graph(df = df.loc[:nb_line-1, :], x = col_x, y = col_y)
+        # création du modèle de graphe et message si erreur pour la sélection des colonnes
+        model_graph = utils_graph.plot_graph(df = df.loc[:nb_line-1, :], x = col_x, y = col_y, figsize=(13, nb_line*0.7))
 
         col_nombre, col_pourcentage = st.columns(2)
 
@@ -77,7 +86,7 @@ def display() :
             else:
                 xlabel = None
 
-            nombre_choice = st.checkbox('Mettre la valeur ?')
+            nombre_choice = st.checkbox('Afficher la valeur absolue de chaque barre ?')
             if nombre_choice : 
                 nombre = st.selectbox('Nom de la colonne des valeurs :', columns)
             else :
@@ -90,25 +99,31 @@ def display() :
             else:
                 ylabel = None
 
-            pourcentage_choice = st.checkbox('Mettre le pourcentage ?')
+            pourcentage_choice = st.checkbox('Afficher le pourcentage de chaque barre ?')
             if pourcentage_choice :
                 pourcentage = st.selectbox('Nom de la colonne des pourcentages :', columns)
             else : 
                 pourcentage = None
 
+        # partie encadrement 
+        options = df[col_y]
+        encadrement_choice = st.checkbox('Voulez-vous mettre en avant une barre ?')
+        if encadrement_choice : 
+            selection = st.multiselect("Choisissez les CFA à encadrer :", options)
+        else :
+            selection = None
+
+        # partie pour la couleur des barres et de la légende
+
         legend_choice = st.checkbox('Voulez-vous mettre une légende de couleurs ?')
 
-        #annotation = st.checkbox('Voulez-cous mettre une annotation ?')
-        #if annotation : 
-        #    col_nombre = st.selectbox('Colonne des valeurs absolues', columns)
-
-    
         if legend_choice:
             col_color = st.selectbox('Choisir la colonne des numéros de couleurs', columns)
 
             try : 
                 # Premier tracé pour générer list_colors
                 model_graph.barh_subplot(colors=col_color, show=False, title= title, xlabel= xlabel, ylabel=ylabel)
+
                 colors_rgba = model_graph.list_colors
 
                 custom_colors = {}
@@ -143,6 +158,7 @@ def display() :
                 )
 
                 model_graph.annotation(pourcentage= pourcentage, Nombre= nombre)
+                model_graph.encadrer(selection=selection)
 
                 st.pyplot(barh)
             
@@ -153,6 +169,8 @@ def display() :
             # Tracer sans légende
             barh = model_graph.barh_subplot(title= title, xlabel= xlabel, ylabel= ylabel, show=False)
             model_graph.annotation(pourcentage= pourcentage, Nombre= nombre)
+            model_graph.encadrer(selection=selection)
+
             st.pyplot(barh)
 
         if 'barh' in locals():

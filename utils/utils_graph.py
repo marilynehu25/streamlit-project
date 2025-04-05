@@ -73,6 +73,8 @@ class plot_graph() :
         self.ax.set_ylabel(ylabel)
         self.ax.set_title(title, pad=30, color='black', fontsize=16)
 
+        self.ax.set_xlim(0, max(self.x)*1.15)
+
         self.ax.grid(axis='x', linestyle='-', alpha=0.2)
 
         plt.tight_layout()
@@ -112,10 +114,12 @@ class plot_graph() :
         return self.fig
                 
 
-    def encadrer(self) : 
+    def encadrer(self, selection) : 
 
-        """iscod_index = self.df[self.df['denomination_cfa'] == 'ISCOD'].index.values[0]
-        bars[iscod_index].set_edgecolor('black')  # Couleur de la bordure
-        bars[iscod_index].set_linewidth(2)        # Épaisseur de la bordure """
+        if selection : 
+            for bar, label in zip(self.bars,self.y):
+                if label in selection:
+                    bar.set_edgecolor('#FCA616')
+                    bar.set_linewidth(3)
 
-        pass
+        return self.fig

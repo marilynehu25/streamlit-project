@@ -124,6 +124,8 @@ def display() :
                 # Premier tracé pour générer list_colors
                 model_graph.barh_subplot(colors=col_color, show=False, title= title, xlabel= xlabel, ylabel=ylabel)
 
+                legend_title = st.text_input('Saisir le nom de la légende :', key='legend_title')
+
                 colors_rgba = model_graph.list_colors
 
                 custom_colors = {}
@@ -149,7 +151,7 @@ def display() :
                 barh = model_graph.barh_subplot(
                     colors=col_color,
                     legend_list=legend_labels,
-                    title_legend="Légende",
+                    title_legend= legend_title,
                     legend_indices=legend_indices, 
                     title= title, 
                     xlabel= xlabel,

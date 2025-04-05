@@ -6,7 +6,7 @@ import matplotlib.patches as mpatches
 
 # partie sur les légendes à revoir
 
-c_map = ['#000091', '#AB0345']
+c_map = ['#7DC2A5', '#C7DDC5','#F1F1D3', '#D7B4BF', '#A1B3D1','#82C9D1', '#56B8D1']
 cmap = LinearSegmentedColormap.from_list("custom_cmap", c_map)
 
 class plot_graph() : 
@@ -77,6 +77,9 @@ class plot_graph() :
 
         self.ax.grid(axis='x', linestyle='-', alpha=0.2)
 
+        self.ax.spines['top'].set_visible(False)
+        self.ax.spines['right'].set_visible(False)
+
         plt.tight_layout()
 
         if show :
@@ -119,7 +122,7 @@ class plot_graph() :
         if selection : 
             for bar, label in zip(self.bars,self.y):
                 if label in selection:
-                    bar.set_edgecolor('#FCA616')
+                    bar.set_edgecolor('black')
                     bar.set_linewidth(3)
 
         return self.fig
